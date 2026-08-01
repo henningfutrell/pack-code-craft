@@ -13,7 +13,13 @@
 # what makes shipping opinion safe.
 
 name: code-craft
-version: 1
+version: 2
+
+# The minimum core this pack was written against. Every skill here assumes the overlay
+# convention (.agents/<pack-name>/<skill>.local.md) and the proxy rule, both of which the
+# core defines. Against an older core it would half-work, and half-working reports
+# nothing. 30 is the version that made packs a thing at all.
+requires_core: 30
 
 provides:
   # Canonical skill bodies + assets (proxy rule: .claude is a proxy for .agents).
