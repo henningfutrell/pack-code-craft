@@ -1,0 +1,68 @@
+# Verified against import-linter 2.13. Config may also live in setup.cfg under an
+# [importlinter] section, or in pyproject.toml under [tool.importlinter] — same keys,
+# different file. Adapt the placeholder root package (example_app) before wiring this in.
+
+[importlinter]
+root_package = example_app
+
+# --- Layers: dependency direction points inward -----------------------------------
+# High-to-low, top of the list may depend on anything below it; nothing below may depend
+# on anything above. This is the enforcement of "domain must not depend on framework,
+# transport, UI, or persistence" and "dependency direction points inward" together.
+[importlinter:contract:layers]
+name = Layered architecture: ui -> application -> domain, never the reverse
+type = layers
+layers =
+    example_app.ui
+    example_app.application
+    example_app.domain
+
+# Sibling-group syntax (not used above): modules on the same indentation level joined by
+# parentheses are treated as peers that may not depend on each other but sit at the same
+# layer height, e.g.:
+#   layers =
+#       example_app.ui
+#       (example_app.application_a | example_app.application_b)
+#       example_app.domain
+#
+# containers = lets the same layer list be checked under multiple parent packages at
+# once (useful for a monorepo with several app roots sharing one layer shape).
+# exhaustive = true fails the contract if a module exists under root_package that is not
+# named in any layer, instead of silently ignoring it.
+
+# --- Forbidden: domain tests must not depend on the data layer, or on unittest.mock ----
+# This is the import-linter equivalent of the Kotlin/ArchUnit and NetArchTest
+# mock-boundary rules elsewhere in this asset set. It is an IMPORT-BOUNDARY rule, not a
+# semantic "did you mock a domain object" check: it forbids the import itself, so a mock
+# reached through an indirection (a shared test-support module outside
+# example_app.domain.tests) will not be caught.
+[importlinter:contract:no-mocking-in-domain-tests]
+name = Domain tests must not import unittest.mock
+type = forbidden
+source_modules =
+    example_app.domain.tests
+forbidden_modules =
+    unittest.mock
+
+# Second forbidden contract: domain/unit tests must not depend on the data layer.
+[importlinter:contract:domain-tests-no-data-layer]
+name = Domain tests must not import the data/persistence layer
+type = forbidden
+source_modules =
+    example_app.domain.tests
+forbidden_modules =
+    example_app.infrastructure.persistence
+
+# --- Baseline ------------------------------------------------------------------------
+# import-linter has NO automatic freeze/generate step — nothing like ArchUnit's
+# FreezingArchRule captures today's violations for you. The only baseline mechanism is
+# ignore_imports: a per-contract, HAND-MAINTAINED allowlist of exact "a.b -> c.d" import
+# lines (wildcards supported, e.g. "example_app.domain.* -> example_app.infrastructure.legacy").
+# Every entry has to be typed in by a person after reading the violation output; there is
+# no command that writes this list for you. Example, attached to the layers contract
+# above via a second copy of its section with ignore_imports added:
+#
+# [importlinter:contract:layers]
+# ...
+# ignore_imports =
+#     example_app.domain.legacy_shim -> example_app.infrastructure.old_client

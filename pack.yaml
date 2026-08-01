@@ -1,0 +1,29 @@
+# pack.yaml — the craft pack: engineering doctrine for work done ON substrate.
+#
+# A pack is installed into a workflow repo by /workflow-template-sync:
+#   template-sync.sh add <this-repo-url>
+#
+# `provides` is exactly the set of paths this pack owns in a workflow repo. One owner
+# per path — a path also claimed by the core or by another pack is an error, refused
+# before anything is written. A path dropped from this list is REMOVED from every repo
+# on its next update, so retiring a skill here retires it everywhere.
+#
+# Every skill in this pack defers, in order: a bound repo's own law → the workflow's
+# overlay at .agents/craft/<skill-name>.local.md → the skill's defaults. That ladder is
+# what makes shipping opinion safe.
+
+name: craft
+version: 1
+
+provides:
+  # Canonical skill bodies + assets (proxy rule: .claude is a proxy for .agents).
+  - .agents/skills/craft-tdd/**
+  - .agents/skills/craft-code-quality/**
+  - .agents/skills/craft-event-naming/**
+  - .agents/skills/craft-ubiquitous-language/**
+  # Discovery-frontmatter proxy stubs — Claude Code needs these to find each skill;
+  # each stub's body only points at its canonical file above.
+  - .claude/skills/craft-tdd/SKILL.md
+  - .claude/skills/craft-code-quality/SKILL.md
+  - .claude/skills/craft-event-naming/SKILL.md
+  - .claude/skills/craft-ubiquitous-language/SKILL.md

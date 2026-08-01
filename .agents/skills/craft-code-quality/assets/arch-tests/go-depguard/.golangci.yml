@@ -1,0 +1,75 @@
+# Verified against golangci-lint's depguard v2 schema. Top-level `version: "2"` is
+# required for the settings shape below — the older v1 shape used a flat map instead of
+# linters.settings.depguard.rules.<name>. Adapt the placeholder module path
+# (example.com/app) before wiring this in.
+
+version: "2"
+
+linters:
+  enable:
+    - depguard
+    - forbidigo
+
+  settings:
+    depguard:
+      rules:
+        # Domain/core must not depend on framework, transport, or persistence packages.
+        domain:
+          # list-mode controls how allow/deny combine:
+          #   original — deny wins if a package matches both allow and deny (default)
+          #   strict   — only packages in allow are permitted, deny is redundant with it
+          #   lax      — allow everything except what deny lists
+          list-mode: strict
+          files:
+            - "$all"
+            - "!$test"
+          allow:
+            - example.com/app/domain
+            - $gostd
+          deny:
+            # golangci-lint requires deny as a LIST of {pkg, desc} even though standalone
+            # depguard (outside golangci-lint) accepts a map form — do not use the map
+            # form here, it will fail to parse under golangci-lint's schema.
+            - pkg: net/http
+              desc: "domain must not depend on transport; depend on a port interface instead"
+            - pkg: database/sql
+              desc: "domain must not depend on persistence; depend on a repository port instead"
+            - pkg: example.com/app/infrastructure
+              desc: "domain must not depend on infrastructure adapters"
+
+    forbidigo:
+      forbid:
+        # Ban ad-hoc console output outside the logging seam.
+        - pattern: 'fmt\.Print.*'
+          msg: "use the structured logger, not fmt.Print*"
+        # Ban a concrete vendor SDK type by its type-checked package identity, not just
+        # text pattern. analyze-types: true is required whenever `pkg` is used — without
+        # it forbidigo only pattern-matches source text and `pkg` has no effect.
+        - pattern: 'sql\.DB'
+          pkg: 'database/sql'
+          msg: "concrete *sql.DB must not appear outside the infrastructure adapter"
+      analyze-types: true
+
+# golangci-lint has NO persisted violation baseline — no equivalent of ArchUnit's
+# FreezingArchRule or dependency-cruiser's --ignore-known. What it has instead is
+# diff-scoping, which changes WHICH code is analyzed rather than storing which
+# violations are pre-existing:
+#
+#   golangci-lint run --new                          # only new violations vs. the git state
+#   golangci-lint run --new-from-rev <REV>            # only violations introduced since REV
+#   golangci-lint run --new-from-merge-base <ref>      # only violations since branching from ref
+#   golangci-lint run --new-from-rev <REV> --whole-files
+#                                                       # ^ widen from "new lines only" to
+#                                                       # "anywhere in a file touched since REV"
+#
+# This is diff-scoping, not a frozen violation store: it has no memory between runs and
+# depends entirely on which git ref is passed each time, unlike a committed baseline file.
+
+# go-arch-lint is a dedicated architecture-linter alternative to depguard for this class
+# of rule, with its own config file (.go-arch-lint.yml): components, commonComponents, and
+# deps.<component>.mayDependOn keys define the allowed dependency graph directly instead
+# of via package-path denylists. Its baseline story is an informal, hand-maintained
+# "legalize"/todo-marker workflow (mark a known violation as accepted debt in config),
+# not an automatic freeze — and UNVERIFIED: its exact field syntax was not checked against
+# current upstream docs for this asset set, so confirm it against the installed version
+# before using it as a template.

@@ -1,0 +1,5 @@
+T:System.Net.Http.HttpClient;Do not reference HttpClient directly outside an adapter. Depend on the injected port interface instead.
+T:System.Data.SqlClient.SqlConnection;Concrete DB connections belong behind a repository port in the infrastructure adapter, never in domain or application code.
+T:Microsoft.Data.SqlClient.SqlConnection;Concrete DB connections belong behind a repository port in the infrastructure adapter, never in domain or application code.
+M:System.Data.SqlClient.SqlConnection.#ctor;Construct connections only inside the infrastructure adapter's composition root.
+T:System.IO.File;Filesystem access belongs behind a port; use the injected abstraction so tests can substitute it at the seam.

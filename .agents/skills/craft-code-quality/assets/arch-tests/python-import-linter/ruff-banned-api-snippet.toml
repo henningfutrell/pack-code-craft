@@ -1,0 +1,31 @@
+# Snippet for pyproject.toml. Ruff's flake8-tidy-imports banned-api check — a different,
+# complementary mechanism from .importlinter (sibling file): import-linter reasons about
+# module-to-module dependency contracts; this bans specific import targets outright,
+# anywhere they'd otherwise be allowed.
+
+[tool.ruff.lint]
+select = ["TID"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+# TID252: ban relative imports (e.g. "from . import x"), forcing absolute imports that
+# make cross-layer dependencies grep-able and reviewable.
+ban-relative-imports = "all"
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+# TID251: banned-api violations. Entries are FLAT — "module.path" = "message" — not a
+# nested table. Adapt the placeholder targets below to whatever concrete external types
+# this codebase's adapters actually wrap (HTTP clients, DB drivers, vendor SDKs).
+"requests" = "Do not call requests directly outside an adapter. Depend on the injected HTTP port."
+"sqlite3" = "Concrete DB connections belong behind a repository port in the infrastructure adapter."
+"unittest.mock" = "Domain tests must not import a mocking library. Exercise real domain logic. (Import-boundary rule — see .importlinter's no-mocking-in-domain-tests contract for the module-scoped version of the same rule.)"
+
+# Ruff has NO baseline mechanism for existing violations — tracked as an open upstream
+# issue (ruff#1149), unresolved as of writing. The closest substitute is:
+#
+#   ruff check --add-noqa
+#
+# which inserts a `# noqa: TID251` comment at each current violation site instead of
+# silently suppressing them via a stored baseline file. That makes every existing
+# violation visible and individually reviewable/removable at the call site, but it is not
+# a frozen store the way ArchUnit's FreezingArchRule or dependency-cruiser's
+# --ignore-known are — there is nothing to prune automatically as violations are fixed.
