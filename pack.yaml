@@ -9,21 +9,21 @@
 # on its next update, so retiring a skill here retires it everywhere.
 #
 # Every skill in this pack defers, in order: a bound repo's own law → the workflow's
-# overlay at .agents/craft/<skill-name>.local.md → the skill's defaults. That ladder is
+# overlay at .agents/code-craft/<skill-name>.local.md → the skill's defaults. That ladder is
 # what makes shipping opinion safe.
 
-name: craft
+name: code-craft
 version: 1
 
 provides:
   # Canonical skill bodies + assets (proxy rule: .claude is a proxy for .agents).
-  - .agents/skills/craft-tdd/**
-  - .agents/skills/craft-code-quality/**
-  - .agents/skills/craft-event-naming/**
-  - .agents/skills/craft-ubiquitous-language/**
+  - .agents/skills/code-craft-tdd/**
+  - .agents/skills/code-craft-quality/**
+  - .agents/skills/code-craft-event-naming/**
+  - .agents/skills/code-craft-ubiquitous-language/**
   # Discovery-frontmatter proxy stubs — Claude Code needs these to find each skill;
   # each stub's body only points at its canonical file above.
-  - .claude/skills/craft-tdd/SKILL.md
-  - .claude/skills/craft-code-quality/SKILL.md
-  - .claude/skills/craft-event-naming/SKILL.md
-  - .claude/skills/craft-ubiquitous-language/SKILL.md
+  - .claude/skills/code-craft-tdd/SKILL.md
+  - .claude/skills/code-craft-quality/SKILL.md
+  - .claude/skills/code-craft-event-naming/SKILL.md
+  - .claude/skills/code-craft-ubiquitous-language/SKILL.md
