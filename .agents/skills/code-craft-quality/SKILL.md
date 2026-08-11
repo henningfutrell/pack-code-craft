@@ -4,12 +4,12 @@ description: >-
   Production code-quality doctrine: small cohesive modules with per-language LOC budgets,
   mandatory lint/static analysis, ports-and-adapters architecture with seams at every
   external dependency, pragmatic SOLID/DDD, no implicit fallbacks, required observability
-  (logs, telemetry, domain events, audit trails), coverage destination, pragmatic MVP-CQRS.
-  Includes a ratcheting path for repos starting far from these standards, tightening pass by
-  pass instead of in one sweep. Use when writing/refactoring production code, reviewing a
-  diff or PR, deciding where a module boundary goes, judging whether a file or function is
-  too large, raising quality in a repo with little or no tooling, or checking whether a
-  change is done.
+  (logs, telemetry, domain events, audit trails), coverage and mutation-score destinations,
+  pragmatic MVP-CQRS. Includes a ratcheting path for repos starting far from these standards,
+  tightening pass by pass instead of in one sweep. Use when writing/refactoring production code,
+  reviewing a diff or PR, deciding where a module boundary goes, judging whether a file or
+  function is too large, wiring coverage or mutation-testing gates, raising quality in a repo
+  with little or no tooling, or checking whether a change is done.
 ---
 
 # code-craft-quality
@@ -63,6 +63,7 @@ Extended SOLID/DDD, architecture/lint detail, clean-code, refactoring: `referenc
 | [loc-budgets.md](references/loc-budgets.md) | per-language size limits, lint tooling |
 | [ratchet.md](references/ratchet.md) | repo far from standards: ladder, baselines |
 | [coverage-destination.md](references/coverage-destination.md) | ratcheting coverage, 90/90 |
+| [mutation-testing.md](references/mutation-testing.md) | proving the assertions are load-bearing, 80% mutation score |
 | [ui-model-boundary.md](references/ui-model-boundary.md) | UI-to-core boundaries, view-models |
 | [repositories.md](references/repositories.md) | repository boundaries, aggregate persistence |
 | [mvp-cqrs.md](references/mvp-cqrs.md) | commands, queries, presenter boundaries |
@@ -81,8 +82,8 @@ new-code-clean, must actually turn. Pass ladder, baselines, exit criterion:
 `references/ratchet.md`.
 
 **Standing expectation:** every turn holds ratchet position, meets the day-one 90/90 coverage
-destination for non-UI code, reports the gap, never lowers a floor
-(`references/coverage-destination.md`).
+destination and the day-one 80% mutation score on changed non-UI code, reports the gap, never
+lowers a floor (`references/coverage-destination.md`, `references/mutation-testing.md`).
 
 ## Enforcement — wired rules beat remembered rules
 
@@ -100,6 +101,8 @@ full compliance is the ratchet's exit criterion, not the bar for every change.
 - File/function sizes within `references/loc-budgets.md`, or justified in writing.
 - Non-UI changed code at 90/90 (`references/coverage-destination.md`); gap reported, no floor
   lowered.
+- Changed non-UI code at an 80% mutation score, every surviving mutant killed or named in
+  writing (`references/mutation-testing.md`).
 - Lint and static analysis run and passing, or the gap surfaced as a finding.
 - Tooling installed, version-pinned, config in version control; no policy-violation warnings.
 - Architecture intact: domain free of framework/transport/persistence, seams at every EUD, UI

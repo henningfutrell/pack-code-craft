@@ -268,6 +268,31 @@ so multi-line statements can map imperfectly. JaCoCo has **no** native changed-c
 that needs a third-party plugin, so pair it with `diff-cover` rather than assuming its rules
 are diff-aware.
 
+## Mutation score, specifically
+
+The destination number, the day-one diff-scoped gate, the mutator-set rule, the equivalent-mutant
+escape hatch, and the per-ecosystem tooling are all owned by
+[mutation-testing.md](mutation-testing.md). They are not repeated here. What belongs in this
+ladder is only **when**:
+
+- **Not before Pass 1's diff coverage is turning.** A mutation run over code no test executes
+  reports no-coverage mutants, which is a coverage fact you already have. Coverage buys the
+  ceiling; the mutation score measures how much of the space below it the assertions hold.
+- **Pass 1, once diff coverage is green** — add the diff-scoped mutation gate to the same
+  changed-code check, blocking. Where the ecosystem's tool cannot scope to a diff, scope to
+  changed files and record that this is what the gate does.
+- **Pass 3, with the other numeric thresholds** — the whole-repo score becomes a floor that only
+  rises, walked in reviewable steps like any other. Run it on a schedule, never in the
+  pull-request gate: the cost is mutants × suite duration, and a gate people disable is not a
+  gate.
+- **Pass 5 retires nothing here.** Unlike a baseline file, a mutation gate is not scaffolding. It
+  stays at the destination.
+
+The anti-pattern table above applies unchanged, and its coverage-theatre entry acquires a second
+form: **a mutation score raised by narrowing the mutator set** is coverage theatre with a longer
+build time. The survivor-accounting rules in `mutation-testing.md` are what keep the number
+honest.
+
 ## Naming
 
 Call it a **ratchet** — the term in current use, and the metaphor carries the invariant:

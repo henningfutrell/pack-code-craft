@@ -3,13 +3,16 @@ name: code-craft-tdd
 description: >-
   Test-first delivery discipline: write the failing test before the production code, prove
   hypotheses with reproducible tests, prefer integration tests against real infrastructure,
-  never mock business logic, mock only external unmanaged dependencies at their seams. Covers
-  testing from cold start and against composed configuration rather than the state prior work
-  left behind, and ratcheting into legacy code that has no suite, via characterization tests
-  and diff-scoped coverage. Use when a bug is reported, a feature is requested, before writing
-  or changing production code, when writing or fixing tests, when a green suite missed a defect
-  that only appears on a fresh machine or from an empty state, when working in a repo with thin
-  or no tests, when debugging behavior, or when validating acceptance criteria.
+  never mock business logic, mock only external unmanaged dependencies at their seams. Turns the
+  prompts and the user's stated expectations into Gherkin acceptance scenarios that drive the
+  system only through its user-side adapters — the API, a CLI, a consumed message — never its
+  interior. Covers testing from cold start and against composed configuration rather than the
+  state prior work left behind, and ratcheting into legacy code that has no suite, via
+  characterization tests and diff-scoped coverage. Use when a bug is reported, a feature is
+  requested, before writing or changing production code, when writing or fixing tests, when
+  writing BDD or acceptance scenarios from a request or acceptance criteria, when a green suite
+  missed a defect that only appears on a fresh machine or from an empty state, when working in a
+  repo with thin or no tests, when debugging behavior, or when validating acceptance criteria.
 ---
 
 # code-craft-tdd
@@ -62,6 +65,22 @@ configuration** (assert on the merged, rendered form the system actually runs, n
 one layer read alone). `references/principles.md` carries both, with the defects that
 earned them.
 
+## Acceptance scenarios — the user's expectation, executable
+
+**The prompts and the user's stated expectations are the specification.** Turn them into Gherkin
+scenarios that execute against the running system, in the requester's own words. The scenario is
+written first and red, stays red across the inner red-green cycles above, and goes green last. It
+does not replace the failing unit or integration test — neither layer detects the other's failure
+mode.
+
+**The boundary is absolute: a scenario drives the system only through a user-side driving
+adapter** — the HTTP API, a CLI, a message the system consumes. It never constructs or resolves a
+service, handler, domain object, or repository, never injects a collaborator, and never asserts on
+interior state. A scenario that calls a service method directly passes while the transport every
+real client uses is broken, and it does so displaying the user's own sentence as its title.
+Origins, the boundary in full with its failure mode, honesty rules, file layout, and per-ecosystem
+tooling: `references/bdd-from-expectations.md`.
+
 ## Composition
 
 - **Never mock business logic. Never mock handlers. Never mock routing. Never mock the
@@ -104,6 +123,8 @@ Load a `references/` file when you reach the step that needs it. Keep this page 
   assertion rules.
 - `references/integration-testing.md` — fixture-first integration testing, real
   infrastructure, mocking precisely (stub/spy/bomb), the thin-poller pattern.
+- `references/bdd-from-expectations.md` — turning stated expectations into Gherkin, the
+  API-only/user-side-adapter boundary, scenario honesty, file layout, per-ecosystem tooling.
 - `references/legacy-and-coverage.md` — ratcheting into a repo with no suite, the coverage
   covenant in full.
 - `references/enforcement.md` — CODE FLAGS (architecture problems testing surfaces) and the

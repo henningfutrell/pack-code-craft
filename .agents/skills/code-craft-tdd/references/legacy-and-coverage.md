@@ -41,3 +41,9 @@ decisions from UI or declarative glue into covered non-UI code. Calculate repo-w
 changed-code coverage over the same explicit, narrow, version-controlled in-scope population;
 report exclusions with the result. Tests must prove observable behavior, decisions, outcomes, and
 failure paths. Merely executing a line is coverage theatre, not evidence.
+
+Coverage is a ceiling, not evidence that the assertions hold beneath it — a line executed by a
+test that asserts nothing about it is indistinguishable, in a coverage report, from a line whose
+behavior is pinned exactly. The measurement that separates them, its destination number, and the
+equivalent-mutant escape hatch are owned by `code-craft-quality`'s
+`references/mutation-testing.md`.

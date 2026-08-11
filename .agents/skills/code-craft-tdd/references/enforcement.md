@@ -25,10 +25,11 @@ Each means the seam is in the wrong place. Report it with the test that exposed 
 
 Several rules in `SKILL.md` and these references are machine-checkable and are worth wiring
 rather than remembering — 90/90 line-and-branch coverage on changed in-scope code, monotone
-overall coverage floors, domain tests not depending on the data layer, UI packages not
-importing domain/core types, container-backed tests not silently skipping, the thin-poller LOC
-budget, tests running before commit. Whether a UI conditional is business policy remains a
-review judgment; do not pretend a coverage or import metric can decide it.
+overall coverage floors, an 80% mutation score on changed code, acceptance step definitions not
+referencing domain/application/persistence types, domain tests not depending on the data layer, UI
+packages not importing domain/core types, container-backed tests not silently skipping, the
+thin-poller LOC budget, tests running before commit. Whether a UI conditional is business policy
+remains a review judgment; do not pretend a coverage or import metric can decide it.
 
 Others are only *approximable*. "Never mock business logic" is enforceable as an import-boundary
 rule — forbid the mocking library from domain test packages — but no tool in any mainstream

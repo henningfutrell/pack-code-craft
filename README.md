@@ -12,8 +12,8 @@ that is the point of it being one.
 
 | Skill | What it carries |
 |---|---|
-| `/code-craft-tdd` | test-first protocol: failing test first, integration focus, seams at unmanaged dependencies, never mock business logic |
-| `/code-craft-quality` | module size budgets, mandatory lint/static analysis, ports and adapters, pragmatic SOLID/DDD, no implicit fallbacks, required observability, and the ratchet for substrate that starts nowhere near any of it |
+| `/code-craft-tdd` | test-first protocol: failing test first, integration focus, seams at unmanaged dependencies, never mock business logic, and BDD acceptance scenarios built from the user's stated expectations that drive the system only through its user-side adapters |
+| `/code-craft-quality` | module size budgets, mandatory lint/static analysis, ports and adapters, pragmatic SOLID/DDD, no implicit fallbacks, required observability, the coverage and mutation-score destinations, and the ratchet for substrate that starts nowhere near any of it |
 | `/code-craft-event-naming` | canonical event/command naming and progressive omission |
 | `/code-craft-ubiquitous-language` | the glossary as a domain's single source of terms |
 

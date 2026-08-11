@@ -138,6 +138,15 @@ That gap is the largest available win in this file.**
 | --- | --- | --- |
 | 90/90 line and branch coverage on changed in-scope code | ENFORCED | diff coverage gate configured for both line and branch coverage; version-control the same narrow exclusions used by the floor |
 | 90/90 repo-wide line and branch coverage floor, ratcheted monotonically | ENFORCED | total-coverage thresholds for both measures; fail if either falls, and raise each threshold toward 90 rather than lowering it |
+| 80% mutation score on changed in-scope code | PARTIAL | genuinely diff-scoped only where the tool supports it — `dotnet stryker --since:<ref>` and `cargo mutants --in-diff`. Elsewhere it is an approximation: PIT's free incremental analysis is documented as experimental and real git-ref scoping is commercial, StrykerJS has `--incremental` (a result cache, not a diff filter) and no `--since` at all, mutmut's scoping is implicit per-function caching. Where that is all the tool offers, gate the changed *files* and say that is what you did. Destination, mutators, and the survivor rules: [mutation-testing.md](mutation-testing.md) |
+| 80% whole-repo mutation score, ratcheted monotonically | ENFORCED | the tool's own score threshold, run on a schedule rather than per-change — a whole-repo mutation run costs mutants × suite duration and is too slow to gate a pull request on |
+| Mutator set not narrowed to raise the mutation score | ENFORCED | the set lives in version-controlled config; review its diff like any other threshold. Narrowing it is the analogue of excluding authored logic from the coverage denominator |
+| Every surviving mutant on changed code killed or named in writing, with reason and owner | REVIEW | no tool decides whether a stated equivalence argument is true. This is the residue, and it carries the value |
+| Acceptance scenarios drive the system only through a user-side adapter | ENFORCED | import/dependency-boundary rule on the acceptance source set, forbidding domain, application, and persistence types in step definitions — the same mechanism as the architecture block, pointed at acceptance test code. It is the one gate that catches a scenario bypassing the transport real clients use (`code-craft-tdd`'s `references/bdd-from-expectations.md`) |
+| Every acceptance scenario traces to a stated expectation | REVIEW | provenance in the `Feature:` block is legible in review; no tool decides whether a scenario corresponds to something a user asked for |
+| Acceptance suite depends only on the deployable and a transport client | PARTIAL | a dependency rule on that source set catches declared dependencies; a scenario reaching the database directly also needs the DB client types banned there |
+| Acceptance scenario asserts observable behavior, not a mock interaction | REVIEW | the same residue as coverage theatre; the mutation score is the closest available proxy |
+| Acceptance scenarios are order-independent | PARTIAL | run the acceptance suite in randomized order in CI — that is the mechanism, and it is cheap |
 | Domain/unit tests must not depend on the data layer | ENFORCED | layer rule applied to test packages |
 | Business logic must not live in the UI | REVIEW | a tool cannot reliably distinguish presentation behavior from business policy; review each conditional, calculation, and policy owner |
 | No test-only visibility escape | ENFORCED | banned-symbol / config gate |
@@ -273,9 +282,13 @@ This maps onto `ratchet.md`'s pass ladder rather than replacing it:
 2. **Banned symbols** — cheap, high signal, and the canary is trivial to write. Do these early.
 3. **Architecture / layering rules** — the biggest win and the biggest initial violation count.
    Baseline or freeze them (support varies by tool — see below), then ratchet.
-4. **Test-boundary rules** (no mocking domain types, tests not touching the data layer) — same
-   mechanism as 3, applied to test source sets.
+4. **Test-boundary rules** (no mocking domain types, tests not touching the data layer, and the
+   acceptance source set not referencing domain/application/persistence types) — same mechanism
+   as 3, applied to test source sets.
 5. **Coverage gates** — diff-scoped first, floor second (`ratchet.md`).
+6. **Mutation gates last**, and only after 5, because a mutation score gathered before coverage is
+   diff-gated mostly reports no-coverage mutants: diff-scoped and blocking per change, whole-repo
+   on a schedule ([mutation-testing.md](mutation-testing.md)).
 
 In bound substrate, all of this is a proposal before it is a change — wiring CI alters how
 everyone on that repo works.
