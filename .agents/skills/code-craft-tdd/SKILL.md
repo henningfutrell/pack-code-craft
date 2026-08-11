@@ -4,10 +4,12 @@ description: >-
   Test-first delivery discipline: write the failing test before the production code, prove
   hypotheses with reproducible tests, prefer integration tests against real infrastructure,
   never mock business logic, mock only external unmanaged dependencies at their seams. Covers
-  ratcheting into legacy code that has no suite, via characterization tests and diff-scoped
-  coverage. Use when a bug is reported, a feature is requested, before writing or changing
-  production code, when writing or fixing tests, when working in a repo with thin or no
-  tests, when debugging behavior, or when validating acceptance criteria.
+  testing from cold start and against composed configuration rather than the state prior work
+  left behind, and ratcheting into legacy code that has no suite, via characterization tests
+  and diff-scoped coverage. Use when a bug is reported, a feature is requested, before writing
+  or changing production code, when writing or fixing tests, when a green suite missed a defect
+  that only appears on a fresh machine or from an empty state, when working in a repo with thin
+  or no tests, when debugging behavior, or when validating acceptance criteria.
 ---
 
 # code-craft-tdd
@@ -44,11 +46,21 @@ Apply it to everything that admits a test. Bug report → failing test. Feature 
 test. Refactor → cover the existing behavior *before* touching it. Performance concern →
 benchmark test. Rationale for why this is worth the cost: `references/rationale.md`.
 
-**Five working principles** — PoC or GTFO (no reproducible test, no actualized claim);
+**Six working principles** — PoC or GTFO (no reproducible test, no actualized claim);
 Target (make the failing test pass, narrowly, nothing more); Triangulate (prove the fix
 isn't overfit); Boundaries (zero, one, many, null, empty, max); Corner cases (bad input,
-concurrency, loss — consider all considerations). In depth, with output-handling and
-assertion rules: `references/principles.md`.
+concurrency, loss — consider all considerations); Initial state (cold start, and the
+composed configuration). In depth, with output-handling and assertion rules:
+`references/principles.md`.
+
+**Initial state, because it is the one a green suite hides.** A test that runs in the
+state the code has already reached proves less than it appears to: a suite that only ever
+observes the system in the state prior work left it in is measuring its own history. Two
+cases need deliberate coverage — **cold start** (nothing built, nothing cached, nothing
+pre-created; zero is a supported state and a different code path) and **composed
+configuration** (assert on the merged, rendered form the system actually runs, never on
+one layer read alone). `references/principles.md` carries both, with the defects that
+earned them.
 
 ## Composition
 
@@ -87,8 +99,9 @@ seam is in the wrong place: `references/legacy-and-coverage.md` and
 Load a `references/` file when you reach the step that needs it. Keep this page thin.
 
 - `references/rationale.md` — why test-first earns its cost, for when someone pushes back.
-- `references/principles.md` — the five principles in depth, output-analysis discipline
-  (run once, grep many), assertion rules.
+- `references/principles.md` — the six principles in depth, including initial state (cold
+  start, composed configuration), output-analysis discipline (run once, grep many),
+  assertion rules.
 - `references/integration-testing.md` — fixture-first integration testing, real
   infrastructure, mocking precisely (stub/spy/bomb), the thin-poller pattern.
 - `references/legacy-and-coverage.md` — ratcheting into a repo with no suite, the coverage
