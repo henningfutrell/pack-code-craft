@@ -194,12 +194,10 @@ page — the four mutation rows sit in its `code-craft-tdd` catalog beside the c
 the per-ecosystem reason the diff-scoped gate is only PARTIAL outside .NET and Rust. Read it
 there.
 
-What belongs here is the canary, because a mutation gate has its own way of failing open.
-
-Prove the gate the way the canary rule requires: introduce one deliberately unasserted test over a
-conditional, confirm the mutation gate fails and names the surviving mutant, revert. A mutation
-gate reading an empty or stale report is green in exactly the way a coverage gate reading an empty
-report is green.
+What belongs here is the canary, because a mutation gate fails open in its own particular way:
+introduce one deliberately unasserted test over a conditional, confirm the mutation gate fails and
+names the surviving mutant, then revert. A mutation gate reading an empty or stale report is green
+in exactly the way a coverage gate reading an empty report is green.
 
 ## Where this sits in the ratchet
 
