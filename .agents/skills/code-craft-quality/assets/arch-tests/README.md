@@ -11,7 +11,7 @@ ENFORCED/PARTIAL/REVIEW classification these implement.
 | --- | --- | --- |
 | `kotlin-archunit/` | Domain-not-depending-on-infrastructure, layered architecture (UI segregated at the edge), mock-boundary rule on domain tests | `FreezingArchRule.freeze()` — automatic, purpose-built |
 | `dotnet-netarchtest/` | Same three rule shapes via `NetArchTest.Rules`, plus a banned-symbols list (`BannedSymbols.txt`) and a reflection-based `InternalsVisibleTo` assertion | None in NetArchTest or BannedApiAnalyzers — use the ratchet's diff-scoping |
-| `typescript-dependency-cruiser/` | Domain/infrastructure/UI dependency direction (`.dependency-cruiser.js`), plus layer and banned-import rules via ESLint (`eslint-boundaries-snippet.js`) | `--ignore-known` (dependency-cruiser) — automatic; ESLint's own `eslint-suppressions.json` — automatic, `"error"`-only rules |
+| `typescript-dependency-cruiser/` | Domain/infrastructure/UI dependency direction (`.dependency-cruiser.js`), plus layer and banned-import rules via ESLint (`eslint-boundaries-snippet.js`) | `--ignore-known` (dependency-cruiser) — automatic; ESLint's own `--suppress-all` (generates `eslint-suppressions.json`) — automatic, `"error"`-only rules |
 | `python-import-linter/` | Layered architecture (`.importlinter` `layers` contract), domain-tests-no-data-layer and no-mocking-in-domain-tests (`forbidden` contracts), plus Ruff banned-api (`ruff-banned-api-snippet.toml`) | `ignore_imports` — hand-maintained allowlist, no generate step; Ruff has none |
 | `go-depguard/` | Domain-package deny rules (`depguard`), banned concrete types (`forbidigo`), noted alternative `go-arch-lint` | No store — `--new`/`--new-from-rev`/`--new-from-merge-base` diff-scoping only |
 
